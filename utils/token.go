@@ -7,16 +7,16 @@ import (
 )
 
 func GenerateJWTToken(userId string) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodES256,jwt.MapClaims{
+	jwtSecret := []byte(os.Getenv("JWT_SECRET"))
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256,jwt.MapClaims{
 		"user_id": userId,
 	})
 
-	signedToken,err := token.SignedString(os.Getenv("JWT_SECRET"))
+	signedToken,err := token.SignedString(jwtSecret)
 
 	if err != nil {
   		return "", err
  	}
-	
  	return signedToken, nil
 }
 

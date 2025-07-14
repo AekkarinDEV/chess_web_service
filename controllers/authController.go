@@ -10,18 +10,19 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type signInRequest struct{
+type signUpRequest struct{
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-func SignUp(context *fiber.Ctx) error{
-	var req signInRequest
+
+func SignUp(c *fiber.Ctx) error{
+	var req signUpRequest
 
 	// request validate
-	if err := context.BodyParser(&req); err != nil {
+	if err := c.BodyParser(&req); err != nil {
 		log.Println(req.Username)
-		return context.Status(400).JSON(fiber.Map{
+		return c.Status(400).JSON(fiber.Map{
 			"error": "invalid request object",
 		})
 	}
@@ -41,18 +42,62 @@ func SignUp(context *fiber.Ctx) error{
 		if strings.Contains(errMessege,"duplicate"){
 			//duplicate username
 			if strings.Contains(errMessege,"username"){
-				return context.Status(409).JSON(fiber.Map{
+				return c.Status(409).JSON(fiber.Map{
 					"error": "username used",
 				})
 			}
 		}
-		return context.Status(500).JSON(fiber.Map{
+		return c.Status(500).JSON(fiber.Map{
 			"error": dbRespond.Error.Error(),
 		})
 	}
 
 	//ok 
-	return context.Status(200).JSON(fiber.Map{
+	return c.Status(200).JSON(fiber.Map{
 		"messege" : "user created",
 	})
+}
+
+type signInRequest struct{
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+func SignIn(c * fiber.Ctx) error {
+	var req signUpRequest
+
+	// request validate
+	if err := c.BodyParser(&req); err != nil {
+		log.Println(req.Username)
+		return c.Status(400).JSON(fiber.Map{
+			"error": "invalid request object",
+		})
+	}
+
+	var user models.User
+	res := db.DB.Where("username = ?", req.Username).First(&user)
+	if res.Error != nil {
+		return c.Status(404).JSON(fiber.Map{
+			"error": "user not found",
+		})
+	}
+	if !utils.CompareWithHashedPassword(user.Password, req.Password) {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "incorrect password",
+		})
+	}
+
+	token, err := utils.GenerateJWTToken(user.Id)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	//ok
+	return c.Status(200).JSON(fiber.Map{
+		"username": user.Username,
+		"access_token": token,
+	})
+
 }
