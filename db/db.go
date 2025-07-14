@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 
@@ -23,7 +22,7 @@ func InitDB() error {
  dbName := os.Getenv("DB_NAME")
  dbPassword := os.Getenv("DB_PASSWORD")
 
- fmt.Print(dbHost)
+
 
  dsn := "host=" + dbHost + " user=" + dbUsername + " password=" + dbPassword + " dbname="+ dbName + " port=" + dbPort + " sslmode=disable"
  DB, err = sql.Open("postgres", dsn)

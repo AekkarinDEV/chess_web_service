@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/AekkarinDEV/chess_web_service/db"
+	"github.com/AekkarinDEV/chess_web_service/routes"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,9 +14,12 @@ func main() {
 	app := fiber.New()
 
 	err := db.InitDB()
-
 	if err != nil{
 		log.Print("error while connecting to database")
+	}
+	err = db.MigrateDb()
+	if err != nil{
+		log.Print("error while migrating database")
 	}
 
 	app.Get("/", func(c * fiber.Ctx) error {
@@ -23,6 +27,9 @@ func main() {
 			"messege" : "hello world",
 		})
 	})
+
+	//init routing
+	app.Route("/",routes.AppRouter)
 
 	err = app.Listen(":8000")
 
