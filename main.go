@@ -16,10 +16,10 @@ func main() {
 	if err != nil{
 		log.Print("error while connecting to database")
 	}
-	err = db.MigrateDb()
-	if err != nil{
-		log.Print("error while migrating database")
-	}
+	// err = db.MigrateDb()
+	// if err != nil{
+	// 	log.Print("error while migrating database")
+	// }
 
 	app.Get("/", func(c * fiber.Ctx) error {
 		return c.JSON(fiber.Map{
