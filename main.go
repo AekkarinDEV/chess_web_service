@@ -10,7 +10,6 @@ import (
 
 func main() {
 
-	
 	app := fiber.New()
 
 	err := db.InitDB()
