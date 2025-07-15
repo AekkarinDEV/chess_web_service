@@ -6,11 +6,14 @@ import (
 	"github.com/AekkarinDEV/chess_web_service/db"
 	"github.com/AekkarinDEV/chess_web_service/routes"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 func main() {
 
 	app := fiber.New()
+
+	app.Use(cors.New())
 
 	err := db.InitDB()
 	if err != nil{
