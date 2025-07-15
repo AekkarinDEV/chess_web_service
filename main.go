@@ -28,7 +28,7 @@ func main() {
 	})
 
 	//init routing
-	app.Route("/",routes.AppRouter)
+	app.Route("/api/v1/",routes.AppRouter)
 
 	err = app.Listen(":8000")
 
